@@ -92,7 +92,8 @@ model Comment {
   authorName  String
   authorEmail String
   body        String
-  status      String   @default("pending")
+  status      String   @default("approved")
+  deleteToken String   @default(cuid())
   createdAt   DateTime @default(now())
 
   @@index([postId, status])

@@ -46,7 +46,13 @@ export async function getPostBySlug(slug: string) {
       tags: { include: { tag: true } },
       attachments: true,
       author: { select: { name: true } },
-      comments: { where: { status: "approved" }, orderBy: { createdAt: "asc" } },
+      comments: {
+        where: { status: "approved" },
+        orderBy: { createdAt: "asc" },
+        // Never select authorEmail or deleteToken here — this data is sent
+        // straight to every visitor's browser as page props.
+        select: { id: true, authorName: true, body: true, createdAt: true },
+      },
     },
   });
 }

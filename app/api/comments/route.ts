@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   // Honeypot tripped — pretend it worked so the bot doesn't learn anything.
   if (data.companyWebsite) {
-    return NextResponse.json({ ok: true, status: "pending" }, { status: 201 });
+    return NextResponse.json({ ok: true }, { status: 201 });
   }
 
   const post = await prisma.post.findUnique({ where: { id: data.postId }, select: { id: true, status: true, title: true } });
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       authorName: data.authorName,
       authorEmail: data.authorEmail,
       body: data.body,
-      status: "pending",
+      status: "approved",
     },
   });
 
@@ -39,5 +39,19 @@ export async function POST(req: Request) {
     createdAt: comment.createdAt,
   });
 
-  return NextResponse.json({ ok: true, status: "pending" }, { status: 201 });
+  // deleteToken lets the commenter delete their own comment later (see
+  // /api/comments/[id]) — the client stores it in localStorage. It's only
+  // ever returned here, right after creation; the public comments query
+  // never selects it.
+  return NextResponse.json(
+    {
+      ok: true,
+      id: comment.id,
+      deleteToken: comment.deleteToken,
+      authorName: comment.authorName,
+      body: comment.body,
+      createdAt: comment.createdAt,
+    },
+    { status: 201 }
+  );
 }

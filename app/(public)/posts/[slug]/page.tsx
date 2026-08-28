@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { getPostBySlug, getRelatedPosts } from "@/lib/queries";
 import VideoEmbed from "@/components/VideoEmbed";
 import PdfCard from "@/components/PdfCard";
 import PostCard from "@/components/PostCard";
 import PostHero from "@/components/PostHero";
 import CommentSection from "@/components/CommentSection";
+import AdminPostControls from "@/components/AdminPostControls";
 import { siteConfig } from "@/lib/site-config";
 
 export async function generateMetadata({
@@ -39,9 +42,16 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const related = await getRelatedPosts(categoryIds, post.id);
   const primaryCategory = post.categories[0]?.category;
   const categories = post.categories.map((c) => c.category);
+  const session = await getServerSession(authOptions);
+  const isAdmin = Boolean((session?.user as { id?: string } | undefined)?.id);
 
   return (
     <article>
+      {isAdmin && (
+        <div className="pt-4">
+          <AdminPostControls postId={post.id} />
+        </div>
+      )}
       <PostHero
         title={post.title}
         categories={categories}
