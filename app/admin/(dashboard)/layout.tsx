@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 
 export const metadata = { robots: { index: false, follow: false } };
 
+// Applies to every page under this layout: otherwise Next.js would
+// statically freeze the admin dashboard, categories, comments, and
+// resources pages from whatever the database looked like at build time.
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pendingComments = await prisma.comment.count({ where: { status: "pending" } });
 

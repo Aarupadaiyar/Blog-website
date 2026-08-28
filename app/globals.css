@@ -154,17 +154,17 @@ body > * {
   font-family: var(--font-sans);
   color: var(--ink);
   font-size: 1.1rem;
-  line-height: 1.8;
+  line-height: 1.65;
 }
 .prose-notebook > * + * {
-  margin-top: 1.4em;
+  margin-top: 1em;
 }
 .prose-notebook h2 {
   font-family: var(--font-sans);
   font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-top: 2em;
+  margin-top: 1.6em;
   line-height: 1.3;
 }
 .prose-notebook h3 {
@@ -172,11 +172,21 @@ body > * {
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin-top: 1.8em;
+  margin-top: 1.4em;
   line-height: 1.35;
 }
 .prose-notebook p {
-  margin-top: 1.3em;
+  margin-top: 1em;
+}
+.prose-notebook p:empty {
+  margin-top: 0.4em;
+}
+/* Lets specific words read as heading-weight without breaking the
+   paragraph into a separate block — see the "Emphasize" editor button. */
+.prose-notebook .prose-big {
+  font-weight: 700;
+  font-size: 1.3em;
+  letter-spacing: -0.01em;
 }
 .prose-notebook a {
   color: var(--accent-deep);
@@ -214,9 +224,10 @@ body > * {
   font-family: var(--font-mono);
 }
 .prose-notebook mark {
-  background: var(--yellow);
+  background: #fdf1a8;
   color: var(--ink);
   padding: 0.05em 0.15em;
+  border-radius: 0.15em;
 }
 .prose-notebook hr {
   border: none;
@@ -235,9 +246,4 @@ body > * {
   color: var(--ink-faint);
   pointer-events: none;
   height: 0;
-}
-.ProseMirror mark {
-  background: var(--yellow);
-  color: var(--ink);
-  padding: 0.05em 0.15em;
 }

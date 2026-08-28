@@ -6,6 +6,10 @@ import { DoodleWaveDivider, DoodleStar, DoodleCheck, DoodleDots } from "@/compon
 
 export const metadata = { title: "Resources" };
 
+// Otherwise Next.js prerenders this page once at build time and it would
+// never show resources added afterward from the admin.
+export const dynamic = "force-dynamic";
+
 const typeColors: Record<string, string> = {
   book: "bg-yellow",
   magazine: "bg-accent-soft",

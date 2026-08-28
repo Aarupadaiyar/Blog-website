@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent, type JSONContent } from "@tiptap/react";
+import { Mark, mergeAttributes } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -16,6 +17,7 @@ import {
   UnderlineIcon,
   Heading2,
   Heading3,
+  Type,
   List,
   ListOrdered,
   Quote,
@@ -28,6 +30,18 @@ import {
   Highlighter,
 } from "lucide-react";
 
+// Lets the admin make specific words within a sentence read as heading-weight
+// (bold + larger) without turning the whole line into a block-level heading.
+const BigText = Mark.create({
+  name: "bigText",
+  parseHTML() {
+    return [{ tag: "span.prose-big" }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ["span", mergeAttributes(HTMLAttributes, { class: "prose-big" }), 0];
+  },
+});
+
 const FONT_OPTIONS = [
   { label: "Default", value: "" },
   { label: "Elegant serif", value: "var(--font-playfair)" },
@@ -38,9 +52,11 @@ const FONT_OPTIONS = [
 ];
 
 const HIGHLIGHT_SWATCHES = [
-  { label: "Yellow", color: "#f7c948" },
-  { label: "Pink", color: "#ff4d8d" },
-  { label: "Green", color: "#16b06a" },
+  { label: "Yellow", color: "#fdf1a8" },
+  { label: "Pink", color: "#ffd1e3" },
+  { label: "Green", color: "#c9f2d8" },
+  { label: "Blue", color: "#c9e3ff" },
+  { label: "Purple", color: "#e3d6ff" },
 ];
 
 function ToolbarButton({
@@ -92,6 +108,7 @@ export default function Editor({
       TextStyle,
       FontFamily,
       Highlight.configure({ multicolor: true }),
+      BigText,
     ],
     content: initialContent || "",
     editorProps: {
@@ -163,6 +180,13 @@ export default function Editor({
         </ToolbarButton>
         <ToolbarButton title="Underline" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()}>
           <UnderlineIcon size={16} />
+        </ToolbarButton>
+        <ToolbarButton
+          title="Emphasize selected words (heading style, stays inline)"
+          active={editor.isActive("bigText")}
+          onClick={() => editor.chain().focus().toggleMark("bigText").run()}
+        >
+          <Type size={16} />
         </ToolbarButton>
         {HIGHLIGHT_SWATCHES.map((s) => (
           <ToolbarButton

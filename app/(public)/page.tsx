@@ -10,6 +10,10 @@ import { siteConfig } from "@/lib/site-config";
 
 const pillColors = ["bg-yellow", "bg-accent-soft", "bg-green-soft", "bg-blue-soft"] as const;
 
+// Otherwise Next.js prerenders this page once at build time (it has no
+// dynamic inputs) and it would never show newly published posts.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [posts, categories] = await Promise.all([getLatestPosts(13), getCategories()]);
   const [featured, ...rest] = posts;
