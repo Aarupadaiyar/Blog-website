@@ -90,7 +90,7 @@ model Comment {
   postId      String
   post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   authorName  String
-  authorEmail String?
+  authorEmail String
   body        String
   status      String   @default("pending")
   createdAt   DateTime @default(now())

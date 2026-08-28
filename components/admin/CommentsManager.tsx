@@ -9,7 +9,7 @@ import { Check, Trash2, Undo2 } from "lucide-react";
 export type AdminComment = {
   id: string;
   authorName: string;
-  authorEmail: string | null;
+  authorEmail: string;
   body: string;
   status: string;
   createdAt: string | Date;
@@ -48,8 +48,9 @@ export default function CommentsManager({ initial }: { initial: AdminComment[] }
         <div key={c.id} className="paper-card p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-bold text-ink">{c.authorName}</span>
+                <span className="text-xs text-ink-faint">{c.authorEmail}</span>
                 <span
                   className={`font-mono-label px-2 py-0.5 text-[0.65rem] ${
                     c.status === "approved" ? "bg-green-soft text-ink" : "bg-yellow text-ink"

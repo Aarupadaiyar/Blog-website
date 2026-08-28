@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { commentSchema } from "@/lib/validation";
+import { appendCommentToSheet } from "@/lib/google-sheets";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,19 +16,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, status: "pending" }, { status: 201 });
   }
 
-  const post = await prisma.post.findUnique({ where: { id: data.postId }, select: { id: true, status: true } });
+  const post = await prisma.post.findUnique({ where: { id: data.postId }, select: { id: true, status: true, title: true } });
   if (!post || post.status !== "published") {
     return NextResponse.json({ error: "Post not found" }, { status: 404 });
   }
 
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       postId: post.id,
       authorName: data.authorName,
-      authorEmail: data.authorEmail || null,
+      authorEmail: data.authorEmail,
       body: data.body,
       status: "pending",
     },
+  });
+
+  await appendCommentToSheet({
+    name: data.authorName,
+    email: data.authorEmail,
+    comment: data.body,
+    postTitle: post.title,
+    createdAt: comment.createdAt,
   });
 
   return NextResponse.json({ ok: true, status: "pending" }, { status: 201 });

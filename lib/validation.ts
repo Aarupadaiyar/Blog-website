@@ -37,7 +37,7 @@ export type PostInput = z.infer<typeof postSchema>;
 export const commentSchema = z.object({
   postId: z.string().min(1),
   authorName: z.string().trim().min(1, "Name is required").max(60),
-  authorEmail: z.string().trim().email().optional().nullable().or(z.literal("")),
+  authorEmail: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
   body: z.string().trim().min(2, "Comment is too short").max(2000),
   // Honeypot: real visitors never see or fill this field. Checked manually
   // (not enforced here) so a bot that fills it gets a fake success instead

@@ -34,6 +34,10 @@ export default function CommentSection({ postId, comments }: { postId: string; c
       setError("Add your name and a comment.");
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Add a valid email — it's required, but never shown publicly.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
 
@@ -107,7 +111,8 @@ export default function CommentSection({ postId, comments }: { postId: string; c
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
-                placeholder="Email (optional, not shown publicly)"
+                required
+                placeholder="Email (required, kept private)"
                 className="rounded-md border border-border bg-surface px-3.5 py-2.5 text-sm text-ink outline-none focus:border-accent"
               />
             </div>
