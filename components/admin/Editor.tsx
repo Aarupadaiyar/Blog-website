@@ -111,11 +111,11 @@ export default function Editor({
       formData.append("file", file);
       formData.append("kind", "image");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
       editor?.chain().focus().setImage({ src: data.url }).run();
-    } catch {
-      alert("Image upload failed.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Image upload failed.");
     } finally {
       setUploading(false);
     }

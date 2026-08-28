@@ -21,11 +21,11 @@ export default function CoverImageUploader({
       formData.append("file", file);
       formData.append("kind", "image");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error();
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
       onChange(data.url);
-    } catch {
-      alert("Cover image upload failed.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Cover image upload failed.");
     } finally {
       setUploading(false);
     }

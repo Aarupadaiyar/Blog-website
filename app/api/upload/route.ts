@@ -27,7 +27,14 @@ export async function POST(req: Request) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await uploadFile(buffer, file.name, kind);
+
+  let result;
+  try {
+    result = await uploadFile(buffer, file.name, kind);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Upload failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 
   return NextResponse.json({ ...result, fileName: file.name, kind });
 }

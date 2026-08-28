@@ -35,6 +35,17 @@ export async function uploadFile(
   originalName: string,
   kind: UploadKind
 ): Promise<UploadResult> {
+  // Vercel's deployed filesystem is read-only outside /tmp, so the local-disk
+  // fallback below would fail with a confusing EROFS error. Fail clearly
+  // instead, so the admin knows exactly what to fix.
+  if (!useCloudinary && process.env.VERCEL) {
+    throw new Error(
+      "Image/PDF uploads need Cloudinary configured in production — set CLOUDINARY_CLOUD_NAME, " +
+        "CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in your Vercel project's environment variables " +
+        "(see SETUP.md), then redeploy."
+    );
+  }
+
   if (useCloudinary) {
     const resourceType = kind === "pdf" ? "raw" : "image";
     const result = await new Promise<UploadApiResponse>((resolve, reject) => {

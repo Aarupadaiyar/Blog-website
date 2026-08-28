@@ -27,11 +27,11 @@ export default function PdfAttachmentsField({
       formData.append("file", file);
       formData.append("kind", "pdf");
       const res = await fetch("/api/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error();
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
       onChange([...value, { url: data.url, publicId: data.publicId, fileName: file.name, type: "pdf" }]);
-    } catch {
-      alert("PDF upload failed.");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "PDF upload failed.");
     } finally {
       setUploading(false);
     }
