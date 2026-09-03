@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Loader2, Send, MessageCircle, Trash2 } from "lucide-react";
-import { DoodleUnderline, DoodleStar } from "./Doodles";
 
 type Comment = {
   id: string;
@@ -12,13 +11,7 @@ type Comment = {
   createdAt: string | Date;
 };
 
-const avatarColors = ["bg-yellow", "bg-accent-soft", "bg-green-soft"] as const;
 const STORAGE_KEY = "notebook_my_comments";
-
-function colorFor(name: string) {
-  const sum = name.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return avatarColors[sum % avatarColors.length];
-}
 
 function loadMyTokens(): Record<string, string> {
   try {
@@ -116,14 +109,11 @@ export default function CommentSection({ postId, comments }: { postId: string; c
   }
 
   return (
-    <div className="relative mt-16 border-t-[1.6px] border-ink pt-10">
-      <DoodleStar className="pointer-events-none absolute right-4 top-6 h-5 w-5 text-yellow opacity-80" />
-      <p className="font-hand text-3xl text-accent-deep">join the conversation</p>
-      <h2 className="mt-1 flex items-center gap-2 text-2xl font-bold tracking-tight text-ink">
-        <MessageCircle size={22} className="text-accent" />
+    <div className="mt-16 border-t border-border pt-10">
+      <h2 className="flex items-center gap-2 font-display text-2xl font-bold text-ink">
+        <MessageCircle size={20} className="text-accent" />
         Comments {commentsList.length > 0 && `(${commentsList.length})`}
       </h2>
-      <DoodleUnderline className="mt-1 h-3 w-32 text-blue" />
 
       <div className="mt-8 space-y-5">
         {commentsList.length === 0 ? (
@@ -131,9 +121,7 @@ export default function CommentSection({ postId, comments }: { postId: string; c
         ) : (
           commentsList.map((c) => (
             <div key={c.id} className="flex gap-3 paper-card p-4">
-              <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-[1.6px] border-ink text-sm font-bold text-ink ${colorFor(c.authorName)}`}
-              >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent-deep">
                 {c.authorName.trim().slice(0, 1).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
@@ -195,8 +183,8 @@ export default function CommentSection({ postId, comments }: { postId: string; c
             aria-hidden="true"
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
-          {justPosted && <p className="text-sm text-green">Posted — thanks for the note.</p>}
-          <button type="submit" disabled={submitting} className="btn-sharp btn-sharp-fill">
+          {justPosted && <p className="text-sm text-emerald-600">Posted — thanks for the note.</p>}
+          <button type="submit" disabled={submitting} className="btn-primary">
             {submitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={14} />}
             Post comment
           </button>

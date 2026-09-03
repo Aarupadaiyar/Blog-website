@@ -28,16 +28,32 @@ linked from the site footer ("Admin login"); remove that link in
 
 Readers can comment on any published post without creating an account — just
 a name, a required email (used for the mailing-list sync below, never shown
-publicly), and the comment. New comments start **pending** and are invisible
-on the site until you approve them from `/admin/comments` — the sidebar shows
-a badge with the pending count. This default (moderate-first) is there to keep
-spam and abuse off the site; if you'd rather comments post instantly, change
-the `status: "pending"` default in `app/api/comments/route.ts` to `"approved"`.
+publicly), and the comment. Comments go **live immediately** — there's no
+moderation queue blocking them. Two safety nets instead:
 
-### Syncing commenter emails to a Google Sheet
+- **You** can un-approve or delete any comment from `/admin/comments`.
+- **Readers** can delete their own comment directly on the post — the site
+  remembers a private per-comment token in their browser (`localStorage`) so
+  only the person who posted it sees a delete option for it. Nobody else
+  (including other readers) can delete someone else's comment.
 
-Optional — comments work fine without this, it just also appends each one as
-a row (name, email, comment, post, date) to a Google Sheet you control.
+## Newsletter signups
+
+There's a simple email capture form in the site footer (`components/
+NewsletterSignup.tsx`) posting to `/api/subscribe`. Every signup:
+
+- Saves to the database (`Subscriber` model) — visible/exportable-as-CSV from
+  `/admin/subscribers`, so this works even if you never touch Google Sheets.
+- Optionally also syncs to a Google Sheet, same mechanism as comments below.
+
+Duplicate emails are handled gracefully (the visitor just sees "you're already
+on the list", no error).
+
+## Syncing to a Google Sheet (comments + newsletter signups)
+
+Optional — both comments and signups work fine without this; it just also
+appends each one as a row to a Google Sheet you control (comments go to one
+tab, signups to another, in the same spreadsheet).
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com), create
    a project (or use an existing one).
@@ -51,15 +67,18 @@ a row (name, email, comment, post, date) to a Google Sheet you control.
    - `private_key` → this is your `GOOGLE_PRIVATE_KEY` (keep the `\n`
      characters in it literally as text when you paste it into an env var —
      the code un-escapes them at runtime)
-6. Create (or open) the Google Sheet you want emails to land in. Add a header
-   row yourself: `Name, Email, Comment, Post, Date`.
+6. Create (or open) the Google Sheet you want data to land in. Add two tabs:
+   - One named `Sheet1` (or whatever you set `GOOGLE_SHEET_NAME` to) with
+     header row `Name, Email, Comment, Post, Date` — for comments.
+   - One named `Subscribers` (or whatever you set
+     `GOOGLE_SUBSCRIBERS_SHEET_NAME` to) with header row `Email, Source, Date`
+     — for newsletter signups.
 7. Click **Share** on that sheet and share it with the `client_email` address
    from step 5, as **Editor**.
 8. Copy the sheet's ID from its URL — the long string between `/d/` and
    `/edit`: `https://docs.google.com/spreadsheets/d/THIS_PART/edit`.
-9. Set `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, and
-   `GOOGLE_SHEET_ID` (and `GOOGLE_SHEET_NAME` if your tab isn't called
-   "Sheet1") in your environment.
+9. Set `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID`,
+   `GOOGLE_SHEET_NAME`, and `GOOGLE_SUBSCRIBERS_SHEET_NAME` in your environment.
 
 ## Going live: what you need
 
@@ -105,28 +124,45 @@ link" field and it embeds automatically.
 
 ## Replicating this for a client
 
-This repo is intentionally self-contained (one client = one deployment, not a
-shared multi-tenant system), so cloning it is straightforward:
+This repo is a **generic template** — every piece of content specific to one
+person (site name, tagline, bio, seed data) lives in one config file or the
+database, never hardcoded into components. Cloning it for a new client:
 
 1. Duplicate the repo (or use it as a GitHub template).
 2. Edit `lib/site-config.ts` — site name, tagline, description, author name/
-   bio/title, and the starting category list.
+   bio/title, and the starting category list. This is the **only** file you
+   need to touch to re-brand the whole site.
 3. Set up a fresh Supabase (or Neon) database and Cloudinary account for the
    client (steps 1–2 above) and put their credentials in a new `.env`.
 4. Pick their admin email/password, run `npx prisma migrate deploy` then
    `npm run db:seed`.
-5. Deploy as a new Vercel project (step 4 above) on their domain.
+5. (Optional) Set up their own Google Sheet for comment/signup syncing —
+   each client gets their own spreadsheet, not a shared one.
+6. Deploy as a new Vercel project (step 4 above) on their domain.
 
-Everything else — the editor, categories, video embeds, PDF attachments, the
-whole visual design — carries over unchanged.
+Everything else — the editor, categories, video embeds, PDF attachments,
+comments, newsletter capture, the whole visual design — carries over
+unchanged. Nothing in the codebase itself needs editing beyond `site-config.ts`.
 
-## Notebook design system reference
+## Design system reference
 
-The visual language (colors, fonts, sharp/pill button styles, the ruled-paper
-background) lives in `app/globals.css` as CSS variables and utility classes
-(`.btn-sharp`, `.paper-card`, `.wobbly-box`, `.font-hand`, `.font-mono-label`,
-`.ruled-overlay`, `.prose-big`). Change the values there to re-theme the whole
-site at once.
+The visual language (colors, the serif/sans font pairing, spacing) lives in
+`app/globals.css` as CSS variables and a handful of utility classes:
+
+- `--ink`, `--paper`, `--accent`, `--border`, `--paper-card` — the whole
+  color palette; change these to re-theme the entire site at once.
+- `.font-display` — the serif headline font (Merriweather) used for every
+  title/heading on the public site.
+- `.paper-card` — the base card style (hairline border, no shadow).
+- `.btn-primary` / `.btn-outline` — the two button styles used everywhere.
+- `.prose-notebook` — article body typography, including `.prose-big` (the
+  editor's "Emphasize" button, for heading-weight words inline in a sentence)
+  and pastel `mark` highlight colors.
+
+The design deliberately avoids illustration/decoration — restrained,
+whitespace-heavy, and typography-led, matching how the personal-blog sites
+this was modeled on (Gates Notes, Seth Godin, Scott Galloway, and similar)
+are actually built.
 
 ## Why pages are marked "force-dynamic"
 
@@ -134,5 +170,5 @@ Several pages (`app/(public)/layout.tsx`, `app/admin/(dashboard)/layout.tsx`,
 `app/sitemap.ts`) export `dynamic = "force-dynamic"`. Without it, Next.js
 would bake a page's HTML in once at build time if it has no dynamic inputs —
 which is wrong for a CMS where content changes constantly between deploys.
-Leave these in place; removing them will make new posts/comments/resources
-stop showing up until the next deployment.
+Leave these in place; removing them will make new posts/comments/resources/
+subscribers stop showing up until the next deployment.

@@ -53,7 +53,7 @@ export default function CommentsManager({ initial }: { initial: AdminComment[] }
                 <span className="text-xs text-ink-faint">{c.authorEmail}</span>
                 <span
                   className={`font-mono-label px-2 py-0.5 text-[0.65rem] ${
-                    c.status === "approved" ? "bg-green-soft text-ink" : "bg-yellow text-ink"
+                    c.status === "approved" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
                   }`}
                 >
                   {c.status.toUpperCase()}
@@ -69,7 +69,7 @@ export default function CommentsManager({ initial }: { initial: AdminComment[] }
             </div>
             <div className="flex items-center gap-3 text-ink-faint">
               {c.status === "pending" ? (
-                <button onClick={() => setStatus(c.id, "approved")} className="hover:text-green" title="Approve">
+                <button onClick={() => setStatus(c.id, "approved")} className="hover:text-emerald-600" title="Approve">
                   <Check size={16} />
                 </button>
               ) : (

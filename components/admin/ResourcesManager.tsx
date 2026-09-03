@@ -230,7 +230,7 @@ export default function ResourcesManager({ initial }: { initial: AdminResource[]
                     <span className="font-mono-label bg-paper-card px-2 py-0.5 text-[0.6rem] text-ink-faint">
                       {r.type.toUpperCase()}
                     </span>
-                    {r.featured && <Star size={13} className="fill-yellow text-yellow" />}
+                    {r.featured && <Star size={13} className="fill-accent-deep text-accent-deep" />}
                   </div>
                   {r.creator && <div className="text-sm text-ink-soft">{r.creator}</div>}
                   {r.description && <p className="mt-1 text-sm text-ink-soft">{r.description}</p>}

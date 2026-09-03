@@ -157,11 +157,11 @@ export default function PostEditorForm({
                 key={c.id}
                 type="button"
                 onClick={() => toggleCategory(c.id)}
-                className={`font-mono-label border-[1.6px] px-3 py-1.5 text-xs transition-colors ${
-                  active ? "border-ink bg-yellow text-ink" : "border-border text-ink-soft hover:border-ink"
+                className={`border px-3 py-1.5 text-sm transition-colors ${
+                  active ? "border-ink bg-ink text-paper" : "border-border text-ink-soft hover:border-ink hover:text-ink"
                 }`}
               >
-                {c.name.toUpperCase()}
+                {c.name}
               </button>
             );
           })}

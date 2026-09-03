@@ -99,6 +99,13 @@ model Comment {
   @@index([postId, status])
 }
 
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  createdAt DateTime @default(now())
+}
+
 model Resource {
   id            String   @id @default(cuid())
   title         String

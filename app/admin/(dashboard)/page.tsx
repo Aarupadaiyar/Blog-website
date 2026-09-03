@@ -4,18 +4,21 @@ import { prisma } from "@/lib/prisma";
 import PostsTable from "@/components/admin/PostsTable";
 
 export default async function AdminDashboardPage() {
-  const posts = await prisma.post.findMany({
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      status: true,
-      updatedAt: true,
-      publishedAt: true,
-      categories: { select: { category: { select: { name: true } } } },
-    },
-  });
+  const [posts, subscriberCount] = await Promise.all([
+    prisma.post.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        status: true,
+        updatedAt: true,
+        publishedAt: true,
+        categories: { select: { category: { select: { name: true } } } },
+      },
+    }),
+    prisma.subscriber.count(),
+  ]);
 
   const counts = {
     total: posts.length,
@@ -37,12 +40,13 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
         {[
           { label: "Total", value: counts.total },
           { label: "Published", value: counts.published },
           { label: "Drafts", value: counts.draft },
           { label: "Scheduled", value: counts.scheduled },
+          { label: "Subscribers", value: subscriberCount },
         ].map((stat) => (
           <div key={stat.label} className="rounded-xl paper-card px-4 py-4">
             <div className="text-2xl font-bold text-ink">{stat.value}</div>

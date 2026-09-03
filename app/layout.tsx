@@ -1,13 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Inter,
-  Just_Me_Again_Down_Here,
-  DM_Mono,
-  Playfair_Display,
-  Merriweather,
-  Space_Grotesk,
-  Caveat,
-} from "next/font/google";
+import { Inter, DM_Mono, Playfair_Display, Merriweather, Space_Grotesk, Caveat } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
@@ -15,12 +7,6 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-});
-
-const hand = Just_Me_Again_Down_Here({
-  variable: "--font-hand",
-  subsets: ["latin"],
-  weight: "400",
 });
 
 const dmMono = DM_Mono({
@@ -38,7 +24,7 @@ const playfair = Playfair_Display({
 const merriweather = Merriweather({
   variable: "--font-merriweather",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "700", "900"],
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -63,12 +49,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${hand.variable} ${dmMono.variable} ${playfair.variable} ${merriweather.variable} ${spaceGrotesk.variable} ${caveat.variable} h-full antialiased`}
+      className={`${inter.variable} ${dmMono.variable} ${playfair.variable} ${merriweather.variable} ${spaceGrotesk.variable} ${caveat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <div className="ruled-overlay" aria-hidden="true" />
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

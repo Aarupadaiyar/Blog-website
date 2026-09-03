@@ -67,3 +67,12 @@ export const resourceSchema = z.object({
 });
 
 export type ResourceInput = z.infer<typeof resourceSchema>;
+
+export const subscribeSchema = z.object({
+  email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
+  source: z.string().trim().max(40).optional(),
+  // Honeypot — see commentSchema for why this isn't enforced here.
+  companyWebsite: z.string().optional(),
+});
+
+export type SubscribeInput = z.infer<typeof subscribeSchema>;

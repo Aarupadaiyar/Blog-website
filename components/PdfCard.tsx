@@ -9,7 +9,7 @@ export default function PdfCard({ url, fileName }: { url: string; fileName: stri
       download={fileName}
       className="group flex items-center gap-4 paper-card p-4 transition-colors hover:border-accent"
     >
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center border-[1.6px] border-ink bg-yellow text-ink">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-accent-soft text-accent-deep">
         <FileText size={20} />
       </div>
       <div className="min-w-0 flex-1">

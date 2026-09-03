@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, PlusCircle, Tags, MessageCircle, BookMarked, ExternalLink, LogOut, Feather } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Tags, MessageCircle, BookMarked, Mail, ExternalLink, LogOut, Feather } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 
 export default function AdminSidebar({ pendingComments = 0 }: { pendingComments?: number }) {
@@ -15,6 +15,7 @@ export default function AdminSidebar({ pendingComments = 0 }: { pendingComments?
     { href: "/admin/categories", label: "Categories", icon: Tags, exact: true },
     { href: "/admin/resources", label: "Resources", icon: BookMarked, exact: true },
     { href: "/admin/comments", label: "Comments", icon: MessageCircle, exact: true, badge: pendingComments },
+    { href: "/admin/subscribers", label: "Subscribers", icon: Mail, exact: true },
   ];
 
   return (
